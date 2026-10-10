@@ -1,0 +1,19 @@
+<%@ page import="java.util.*,java.time.*,app.Db" contentType="text/html;charset=UTF-8" buffer="64kb" %>
+<%
+request.setCharacterEncoding("UTF-8");
+Map<String,String> me=Db.me(session);
+if(me==null){response.sendRedirect("login.jsp");return;}
+String role=me.get("role");
+String[][] nav="admin".equals(role)
+ ?new String[][]{{"dashboard","Home"},{"doctors","Doctors"},{"appointments","Appointments"},{"users","Users"},{"feedback","Feedback"},{"profile","Profile"}}
+ :"doctor".equals(role)
+ ?new String[][]{{"dashboard","Home"},{"appointments","Appointments"},{"feedback","Feedback"},{"profile","Profile"}}
+ :new String[][]{{"dashboard","Home"},{"doctors","Doctors"},{"appointments","My visits"},{"feedback","Feedback"},{"profile","Profile"}};
+String cur=request.getServletPath();
+%>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CareLink</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><b>CareLink</b><span><%=Db.h(me.get("name"))%> (<%=role%>)</span><a class="btn s" href="logout.jsp">Logout</a></header>
+<nav><% for(String[] n:nav){ %><a class="<%=cur.endsWith("/"+n[0]+".jsp")?"on":""%>" href="<%=n[0]%>.jsp"><%=n[1]%></a><% } %></nav>
+<main>
